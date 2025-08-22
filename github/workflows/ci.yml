@@ -1,0 +1,60 @@
+# Nome do workflow
+name: CI Build and Test
+
+# Gatilhos
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+# Lista de Jobs
+jobs:
+  # ------------------------------------
+  # 1. Job de Build
+  # ------------------------------------
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # Como o package.json está na raiz, executamos os comandos aqui mesmo
+      - name: Instalar dependências e fazer o build
+        run: |
+          npm ci
+          npm run build
+
+  # ------------------------------------
+  # 2. Job de Teste
+  # ------------------------------------
+  test:
+    # A linha mais importante: este job SÓ roda se o job 'build' terminar com sucesso
+    needs: build
+    
+    runs-on: ubuntu-latest
+
+    steps:
+      # Cada job roda em uma máquina nova, então precisamos baixar o código novamente
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      # E configurar o Node.js novamente
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      # Instalamos as dependências de novo, pois a máquina é limpa
+      - name: Instalar dependências
+        run: npm ci
+
+      # Finalmente, rodamos o comando de teste definido no package.json
+      - name: Rodar os testes
+        run: npm test
