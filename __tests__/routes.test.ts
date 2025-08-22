@@ -41,6 +41,20 @@ describe("POST /todo", () => {
       },
     ]);
   });
+
+  // NOVO TESTE ADICIONADO AQUI
+  it("should return a 400 error if the description is not provided", async () => {
+    // Enviamos uma requisição com o corpo vazio
+    const response = await request.post("/todo").send({});
+
+    // Esperamos um status de erro "Bad Request"
+    expect(response.status).toBe(400);
+
+    // Esperamos a mensagem de erro que a API retorna
+    expect(response.body).toEqual({
+      erro: "formato de requisição incorreto :(",
+    });
+  });
 });
 
 describe("DELETE /todo/:id", () => {
@@ -62,5 +76,19 @@ describe("DELETE /todo/:id", () => {
         descricao: "tarefa teste 2",
       },
     ]);
+  });
+
+  // NOVO TESTE ADICIONADO AQUI
+  it("should return a 404 error if the task ID does not exist", async () => {
+    // Tentamos deletar uma tarefa com um ID que certamente não existe
+    const response = await request.delete("/todo/999");
+
+    // Esperamos um status de erro "Not Found"
+    expect(response.status).toBe(404);
+
+    // Esperamos a mensagem de erro correspondente
+    expect(response.body).toEqual({
+      mensagem: `ID não encontrado!`,
+    });
   });
 });

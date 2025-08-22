@@ -4,7 +4,7 @@ name: CI Build and Test
 # Gatilhos
 on:
   push:
-    branches: [ main ]
+
   pull_request:
     branches: [ main ]
 
