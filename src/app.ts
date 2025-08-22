@@ -8,4 +8,6 @@ const app = Express();
 
 app.use(router);
 
+const erroProposital: number = "isto vai quebrar o build";
+
 export { app };
